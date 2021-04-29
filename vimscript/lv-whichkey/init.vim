@@ -137,4 +137,15 @@ let g:which_key_map.l = {
       \ 'S' : [':Telescope lsp_workspace_symbols'    , 'workspace symbols'],
       \ }
 
+" t is for terminal
+let g:which_key_map.t = {
+      \ 'name' : '+terminal' ,
+      \ ';' : [':FloatermNew --wintype=normal --height=6'       , 'terminal'],
+      \ 'f' : [':FloatermNew fzf'                               , 'fzf'],
+      \ 't' : [':FloatermToggle'                                , 'toggle'],
+      \ 'y' : [':FloatermNew ytop'                              , 'ytop'],
+      \ 'r' : [':FloatermNew ranger'                            , 'ranger'],
+      \ 'h' : [':FloatermNew htop'                              , 'htop'],
+      \ }
+
 call which_key#register('<Space>', "g:which_key_map")
