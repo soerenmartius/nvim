@@ -19,7 +19,12 @@ if require("lv-utils").check_lsp_client_active "terraformls" then
 end
 
 require("lspconfig").terraformls.setup {
-  cmd = { DATA_PATH .. "/lspinstall/terraform/terraform-ls", "serve" },
-  on_attach = require("lsp").common_on_attach,
-  filetypes = { "tf", "terraform", "hcl" },
+    cmd = {DATA_PATH .. "/lspinstall/terraform/terraform-ls", "serve"},
+    on_attach = require("lsp").common_on_attach,
+    filetypes = {"tf", "terraform", "hcl"}
 }
+
+vim.opt_local.tabstop = 2
+vim.opt_local.shiftwidth = 2
+vim.opt_local.softtabstop = 2
+vim.opt_local.expandtab = false
