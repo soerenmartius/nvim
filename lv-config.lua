@@ -1,58 +1,64 @@
 -- Settings
 O.leader_key = ' '
-O.colorscheme = 'lunar'
-O.colorcolumn = '80,120'
+O.colorscheme = 'spacegray'
+O.completion.autocomplete = true
 O.format_on_save = true
-O.auto_complete = true
+
 O.auto_close_tree = 1
-O.wrap_lines = false
-O.timeoutlen = 100
-O.document_highlight = true
-O.ignore_case = true
-O.smart_case = true
+O.nvim_tree_disable_netrw = 1
 
--- python
--- add things like O.python.formatter.yapf.exec_path
--- add things like O.python.linter.flake8.exec_path
--- add things like O.python.formatter.isort.exec_path
-O.lang.python.formatter = 'black'
-O.lang.python.isort = true
-O.lang.python.diagnostics.virtual_text = true
-O.lang.python.diagnostics.signs = true
-O.lang.python.diagnostics.underline = true
-O.lang.python.analysis.type_checking = "oon"
-O.lang.python.analysis.auto_search_paths = true
-O.lang.python.analysis.use_library_code_types = true
-
--- Lua
-O.lang.lua.formatter = 'lua-format'
-
--- JS/TS
-O.lang.tsserver.formatter = 'prettier'
-O.lang.tsserver.linter = 'eslint'
+O.default_options.relativenumber = true
+O.default_options.timeoutlen = 100
+O.default_options.colorcolumn = '80,120'
 
 -- Plugins
 O.plugin.dashboard.active = true
 O.plugin.floatterm.active = true
 O.plugin.zen.active = true
-O.plugin.colorizer.active = true
-O.plugin.indent_line.active = true
-O.plugin.ts_context_commentstring.active = true
-O.plugin.symbol_outline.active = true
-O.plugin.trouble.active = true
-O.plugin.debug.active = true
-O.plugin.telescope_fzy.active = true
-O.plugin.telescope_project.active = true
-O.plugin.sanegx.active = true
-O.plugin.diffview.active = true
-O.plugin.ts_rainbow.active = true
-O.plugin.ts_autotag.active = true
-O.plugin.ts_textobjects.active = false
-O.plugin.ts_textsubjects.active = true
-O.plugin.ts_hintobjects.active = true
+O.plugin.telescope.active = true
+
+-- Treesitter
+O.treesitter.ensure_installed = "all"
+O.treesitter.ignore_install = {"haskell"}
+O.treesitter.highlight.enabled = true
+O.treesitter.context_commentstring.enabled = true
+O.treesitter.autotag.enabled = true
+O.treesitter.playground.enabled = true
+O.treesitter.rainbow.enabled = true
+
+-- Lua
+O.lang.lua.formatter = 'lua-format'
+
+-- Javascript/Typescript
+O.lang.tsserver.formatter = 'prettier'
+O.lang.tsserver.linter = 'eslint'
+O.lang.tsserver.autoformat = true
+
+-- Python
+O.lang.python.isort = true
+O.lang.python.diagnostics.virtual_text = true
+O.lang.python.analysis.use_library_code_types = true
+
+-- O.plugin.trouble.active = true
+-- O.plugin.debug.active = true
+-- O.plugin.sanegx.active = true
+-- O.plugin.diffview.active = true
 
 O.user_plugins = {
     {
+      "b3nj5m1n/kommentary",
+      cmd = "CommentToggle",
+      config = function()
+        require("lv-kommentary").config()
+      end,
+      event = "BufRead"
+    },
+    {
+        "norcalli/nvim-colorizer.lua",
+        event = "BufWinEnter",
+        config = function() require "lv-colorizer" end,
+        disable = false
+    }, {
         "monaqa/dial.nvim",
         event = "BufRead",
         config = function() require("lv-dial").config() end,
@@ -104,10 +110,47 @@ O.user_plugins = {
             }
         end,
         disable = false
+    }, {'romgrk/nvim-treesitter-context', event = "BufRead", disable = false},
+    -- Pretty parentheses
+    -- TODO: Will be replaced by lunarvim at some point
+    {"p00f/nvim-ts-rainbow", disable = false}, {
+        "lukas-reineke/indent-blankline.nvim",
+        event = "BufRead",
+        setup = function()
+            vim.g.indentLine_enabled = 1
+            vim.g.indent_blankline_char = "▏"
+
+            vim.g.indent_blankline_filetype_exclude =
+                {"help", "terminal", "dashboard"}
+            vim.g.indent_blankline_buftype_exclude = {"terminal"}
+            vim.g.indent_blankline_show_trailing_blankline_indent = false
+            vim.g.indent_blankline_show_first_indent_level = true
+            vim.g.indent_blankline_space_char = ' '
+            -- vim.g.indent_blankline_char_highlight_list = {"Error", "Function"}
+
+        end,
+        disable = false
     }, {
-        'romgrk/nvim-treesitter-context',
-        event = "BufRead"
-        -- disable = not O.plugin.treesitter_context.active
+        "simrat39/symbols-outline.nvim",
+        cmd = "SymbolsOutline",
+        setup = function()
+            vim.g.symbols_outline = {
+                highlight_hovered_item = true,
+                show_guides = true,
+                auto_preview = true,
+                position = "right",
+                keymaps = {
+                    close = "<Esc>",
+                    goto_location = "<Cr>",
+                    focus_location = "o",
+                    hover_symbol = "<C-space>",
+                    rename_symbol = "r",
+                    code_actions = "a"
+                },
+                lsp_blacklist = {}
+            }
+        end,
+        disable = false
     }, {
         "folke/todo-comments.nvim",
         config = function() require("todo-comments").setup {} end,
@@ -117,68 +160,25 @@ O.user_plugins = {
 }
 
 O.user_which_key = {
+    S = {
+        name = "+spectre",
+        ["o"] = {":lua require('spectre').open()<CR>", "Open Spectre"},
+        ["f"] = {":lua require('spectre').open()<CR>", "Search in current file"}
+    },
+    v = {
+        name = "+split views",
+        ["v"] = {"<C-W>v", "Split Vertically"},
+        ["s"] = {"<C-W>s", "Split Horizontially"}
+    },
     t = {
         name = "+terminal",
         t = {"<cmd>lua require('FTerm').toggle()<cr>", "Terminal"},
         T = {'<cmd>lcd %:p:h | :term<cr>', 'open terminal in this directory'}
     },
-    g = {
-        name = "Git",
-        j = {"<cmd>lua require 'gitsigns'.next_hunk()<cr>", "Next Hunk"},
-        k = {"<cmd>lua require 'gitsigns'.prev_hunk()<cr>", "Prev Hunk"},
-        l = {"<cmd>lua require 'gitsigns'.blame_line()<cr>", "Blame"},
-        p = {"<cmd>lua require 'gitsigns'.preview_hunk()<cr>", "Preview Hunk"},
-        r = {"<cmd>lua require 'gitsigns'.reset_hunk()<cr>", "Reset Hunk"},
-        R = {"<cmd>lua require 'gitsigns'.reset_buffer()<cr>", "Reset Buffer"},
-        s = {"<cmd>lua require 'gitsigns'.stage_hunk()<cr>", "Stage Hunk"},
-        u = {
-            "<cmd>lua require 'gitsigns'.undo_stage_hunk()<cr>",
-            "Undo Stage Hunk"
-        },
-        o = {"<cmd>Telescope git_status<cr>", "Open changed file"},
-        b = {"<cmd>Telescope git_branches<cr>", "Checkout branch"},
-        c = {"<cmd>Telescope git_commits<cr>", "Checkout commit"},
-        C = {
-            "<cmd>Telescope git_bcommits<cr>",
-            "Checkout commit(for current file)"
-        },
-        B = {"<cmd>GitBlameToggle<cr>", "Toggle Git Blame"}
-    },
-    l = {
-        name = "LSP",
-        a = {"<cmd>lua vim.lsp.buf.code_action()<cr>", "Code Action"},
-        d = {
-            "<cmd>Telescope lsp_document_diagnostics<cr>",
-            "Document Diagnostics"
-        },
-        w = {
-            "<cmd>Telescope lsp_workspace_diagnostics<cr>",
-            "Workspace Diagnostics"
-        },
-        f = {"<cmd>Neoformat<cr>", "Format"},
-        i = {"<cmd>LspInfo<cr>", "Info"},
-        j = {
-            "<cmd>lua vim.lsp.diagnostic.goto_next({popup_opts = {border = O.lsp.popup_border}})<cr>",
-            "Next Diagnostic"
-        },
-        k = {
-            "<cmd>lua vim.lsp.diagnostic.goto_prev({popup_opts = {border = O.lsp.popup_border}})<cr>",
-            "Prev Diagnostic"
-        },
-        q = {"<cmd>Telescope quickfix<cr>", "Quickfix"},
-        r = {"<cmd>lua vim.lsp.buf.rename()<cr>", "Rename"},
-        s = {
-            O.plugin.symbol_outline.active and "<cmd>SymbolsOutline<cr>" or
-                "<cmd> Telescope lsp_document_symbols<cr>", "Document Symbols"
-        },
-        S = {
-            "<cmd>Telescope lsp_dynamic_workspace_symbols<cr>",
-            "Workspace Symbols"
-        },
-        t = {
+    s = {
+        T = {
             "<cmd>TodoTelescope<cr>",
             "Search through all project todos with Telescope"
         }
     }
-
 }
