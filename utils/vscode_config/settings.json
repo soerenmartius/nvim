@@ -1081,7 +1081,6 @@
       ]
     }
   },
-
   "workbench.colorCustomizations": {
     "[Default Dark+]": {
       "statusBar.background": "#2E2E2E",
