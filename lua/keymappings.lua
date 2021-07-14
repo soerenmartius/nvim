@@ -39,8 +39,8 @@ local mappings = {
     { "<C-Right>", ":vertical resize +2<CR>", { silent = true } },
 
     -- Tab switch buffer
-    -- { "<TAB>", ":bnext<CR>" },
-    -- { "<S-TAB>", ":bprevious<CR>" },
+    { "<TAB>", ":bnext<CR>" },
+    { "<S-TAB>", ":bprevious<CR>" },
 
     -- Move current line / block with Alt-j/k a la vscode.
     { "<A-j>", ":m .+1<CR>==" },
